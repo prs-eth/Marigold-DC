@@ -1,4 +1,4 @@
-# ⇆ Marigold-DC: Zero-Shot Monocular Depth Completion with Guided Diffusion
+# ⇆ Marigold-DC: Zero-Shot Monocular Depth Completion with Guided Diffusion (ICCV 2025)
 
 [![Website](https://img.shields.io/badge/%F0%9F%A4%8D%20Project%20-Website-blue)](https://marigolddepthcompletion.github.io)
 [![arXiv](https://img.shields.io/badge/arXiv-PDF-b31b1b)](http://arxiv.org/abs/2412.13389)
