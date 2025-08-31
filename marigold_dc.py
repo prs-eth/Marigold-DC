@@ -223,12 +223,16 @@ def main():
             device = torch.device("cpu")
         processing_resolution_non_cuda = 512
         num_inference_steps_non_cuda = 10
+        ensemble_size_non_cuda = 1
         if processing_resolution > processing_resolution_non_cuda:
             logging.warning(f"CUDA not found: Reducing processing_resolution to {processing_resolution_non_cuda}")
             processing_resolution = processing_resolution_non_cuda
         if num_inference_steps > num_inference_steps_non_cuda:
             logging.warning(f"CUDA not found: Reducing num_inference_steps to {num_inference_steps_non_cuda}")
             num_inference_steps = num_inference_steps_non_cuda
+        if ensemble_size > ensemble_size_non_cuda:
+            logging.warning(f"CUDA not found: Reducing ensemble_size to {ensemble_size_non_cuda}")
+            ensemble_size = ensemble_size_non_cuda
 
     pipe = MarigoldDepthCompletionPipeline.from_pretrained(args.checkpoint, prediction_type="depth").to(device)
     pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing")
