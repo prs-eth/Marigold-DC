@@ -19,6 +19,7 @@
 import argparse
 import logging
 import os
+import sys
 import warnings
 
 import diffusers
@@ -90,7 +91,7 @@ class MarigoldDepthCompletionPipeline(MarigoldDepthPipeline):
         # Preprocess sparse depth
         sparse_depth = torch.from_numpy(sparse_depth)[None, None].float().to(device)
         sparse_mask = sparse_depth > 0
-        logging.info(f"Using {sparse_mask.int().sum().item()} guidance points")
+        logging.debug(f"Using {sparse_mask.int().sum().item()} guidance points")
 
         def affine_to_metric(depth: torch.Tensor) -> torch.Tensor:
             # Convert affine invariant depth predictions to metric depth predictions using the parametrized scale and shift. See Equation 2 of the paper.
@@ -210,6 +211,14 @@ def main():
     parser.add_argument("--processing_resolution", type=int, default=768, help="Denoising resolution")
     parser.add_argument("--checkpoint", type=str, default=DEPTH_CHECKPOINT, help="Depth checkpoint")
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
 
     num_inference_steps = args.num_inference_steps
     ensemble_size = args.ensemble_size
