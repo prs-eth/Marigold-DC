@@ -116,7 +116,7 @@ class MarigoldDepthCompletionPipeline(MarigoldDepthPipeline):
         self.scheduler.set_timesteps(num_inference_steps, device=device)
 
         ensemble_predictions = []
-        for ensemble_idx in self.progress_bar(range(ensemble_size), desc="Processing ensemble members..."):
+        for ensemble_idx in self.progress_bar(range(ensemble_size), desc="Processing ensemble members...", leave=False):
 
             current_image_latent = image_latent[ensemble_idx:ensemble_idx+1]  # [1,4,h,w]
             current_pred_latent = pred_latent[ensemble_idx:ensemble_idx+1]   # [1,4,h,w]
