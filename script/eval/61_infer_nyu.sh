@@ -6,8 +6,8 @@ set -x
 subfolder=${1:-"eval"}
 
 python script/infer.py \
-    --input_dir ${BASE_DATA_DIR}/nyu \
-    --output_dir output/${subfolder}/nyu/prediction \
+    --input_dir ${BASE_DATA_DIR}/nyudepthv2 \
+    --output_dir output/${subfolder}/nyudepthv2 \
     --num_inference_steps 50 \
     --ensemble_size 10 \
     --processing_resolution 768 \

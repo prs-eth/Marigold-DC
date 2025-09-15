@@ -7,7 +7,7 @@ subfolder=${1:-"eval"}
 
 python script/infer.py \
     --input_dir ${BASE_DATA_DIR}/scannet \
-    --output_dir output/${subfolder}/scannet/prediction \
+    --output_dir output/${subfolder}/scannet \
     --num_inference_steps 50 \
     --ensemble_size 10 \
     --processing_resolution 0 \

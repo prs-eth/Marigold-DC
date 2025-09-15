@@ -7,7 +7,7 @@ subfolder=${1:-"eval"}
 
 python script/infer.py \
     --input_dir ${BASE_DATA_DIR}/ddad \
-    --output_dir output/${subfolder}/ddad/prediction \
+    --output_dir output/${subfolder}/ddad \
     --num_inference_steps 50 \
     --ensemble_size 10 \
     --processing_resolution 768 \
