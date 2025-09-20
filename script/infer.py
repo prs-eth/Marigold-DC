@@ -37,6 +37,7 @@ from marigold_dc import MarigoldDepthCompletionPipeline
 warnings.simplefilter(action="ignore", category=FutureWarning)
 diffusers.utils.logging.disable_progress_bar()
 
+
 def main():
     parser = argparse.ArgumentParser(description="Marigold-DC Dataset Inference")
 
@@ -175,4 +176,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    main()
