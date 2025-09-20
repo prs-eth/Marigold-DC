@@ -1,6 +1,8 @@
 diffusers==0.31.0
 numpy
+pandas
 pillow
 torch
 transformers
 accelerate
+tqdm
