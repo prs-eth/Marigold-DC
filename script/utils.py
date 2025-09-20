@@ -94,3 +94,53 @@ def validate_prediction_gt_structure(prediction_dir: str, gt_dir: str) -> Tuple[
 
     logging.info(f"Prediction and GT validation successful. Found {len(prediction_files)} files.")
     return True, ""
+
+
+def deterministic_select_k_true(valid_mask: np.ndarray, k: Optional[int] = None, seed: int = 2024) -> np.ndarray:
+    """
+    Select exactly k True values from a boolean mask. Used to sample the sparse depth values from the GT depth map.
+
+    Args:
+        valid_mask (np.ndarray): A boolean 2D numpy array.
+        k (Optional[int]): The number of True values to select. If None, return the original mask.
+        seed (int): Seed for the random number generator.
+
+    Returns:
+        np.ndarray: A boolean 2D numpy array with exactly k True values, subset of the input mask.
+    """
+    num_true = np.sum(valid_mask)
+    true_indices = np.argwhere(valid_mask)
+
+    # If k is None, return the original mask
+    if k is None:
+        logging.warning("k is None, returning the original mask")
+        return valid_mask
+
+    # If k is 0 or the mask has no True values, return an empty mask
+    if k == 0 or num_true == 0:
+        logging.warning("k is 0 or the mask has no True values, returning an empty mask")
+        return np.zeros_like(valid_mask, dtype=bool)
+
+    # Ensure k is not greater than the number of True values in the mask
+    if k > num_true:
+        logging.warning(f"k is greater than the number of True values in the mask, setting k to {num_true}")
+        k = num_true
+
+    # Pick the first k indices after shuffling
+    np.random.seed(seed)
+    np.random.shuffle(true_indices)
+    selected_indices = true_indices[:k]
+
+    selected_arr = np.zeros_like(valid_mask, dtype=bool)
+    selected_arr[tuple(zip(*selected_indices))] = True
+    return selected_arr
+
+
+if __name__ == "__main__":
+    # example of how to get a sparse depth map from a dense GT depth map
+    dense_depth = np.array([[1.2, 2.3, 3.4], [4.5, 5.6, 6.7], [7.8, 8.9, 9.0]])
+    valid_mask = dense_depth > 0
+    hints_mask = deterministic_select_k_true(valid_mask, 3, 2024)
+    sparse_depth = np.zeros_like(dense_depth)
+    sparse_depth[hints_mask] = dense_depth[hints_mask]
+    print(sparse_depth)
