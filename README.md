@@ -80,7 +80,31 @@ export HF_HOME=/large_volume/cache
 ```
 
 ## 🦿 Evaluation on test datasets
-Coming soon
+
+Set data directory variable (needed in evaluation scripts) and download the evaluation datasets there.
+```bash
+export BASE_DATA_DIR=<YOUR_DATA_DIR>  # Set target data directory, e.g., ~/Marigold-DC/datasets/
+```
+
+Each dataset should have the following format:
+```
+dataset_name/
+├── rgb/                # RGB images (png, jpg, or jpeg)
+│   ├── image_001.png
+│   └── ...
+├── sparse/             # Sparse depth arrays in meters (.npy files), null values have 0
+│   ├── image_001.npy
+│   └── ...
+└── gt/                 # Ground truth dense depth arrays in meters (.npy files)
+    ├── image_001.npy
+    └── ...
+```
+
+Run inference and evaluation scripts, for example:
+```bash
+bash script/eval/11_infer_scannet.sh  # Run inference
+bash script/eval/12_eval_scannet.sh   # Evaluate predictions
+```
 
 ## Abstract
 
@@ -99,6 +123,7 @@ from (dense) image pixels, guided by sparse depth; rather than as inpainting (sp
 
 ## 📢 News
 
+ - 2015-07-23: The paper is accepted at ICCV 2025.
  - 2024-12-19: ArXiv paper and demo release.
  - 2024-12-18: Code release (this repository).
 
