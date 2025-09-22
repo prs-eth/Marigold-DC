@@ -81,12 +81,13 @@ export HF_HOME=/large_volume/cache
 
 ## 🦿 Evaluation on test datasets
 
-Set data directory variable (needed in evaluation scripts) and download the evaluation datasets there.
+Set the data directory variable (needed in evaluation scripts) and download the evaluation datasets there, following the instructions in [DATASETS.md](DATASETS.md) to create the sparse depth maps in a reproducible way.
+
 ```bash
-export BASE_DATA_DIR=<YOUR_DATA_DIR>  # Set target data directory, e.g., ~/Marigold-DC/datasets/
+export BASE_DATA_DIR=<YOUR_DATA_DIR>  # e.g., ~/Marigold-DC/datasets/
 ```
 
-Each dataset should have the following format:
+Each dataset in the data directory should have the following format:
 ```
 dataset_name/
 ├── rgb/                # RGB images (png, jpg, or jpeg)
@@ -102,9 +103,12 @@ dataset_name/
 
 Run inference and evaluation scripts, for example:
 ```bash
+# Scannet
 bash script/eval/11_infer_scannet.sh  # Run inference
 bash script/eval/12_eval_scannet.sh   # Evaluate predictions
 ```
+
+All scripts with the correct inference parameters are available in the `script/eval/` directory.
 
 ## Abstract
 
