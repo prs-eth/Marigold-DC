@@ -7,3 +7,5 @@ transformers
 accelerate
 tqdm
 numba
+scipy
+h5py
