@@ -9,3 +9,4 @@ tqdm
 numba
 scipy
 h5py
+gdown
