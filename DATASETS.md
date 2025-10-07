@@ -10,7 +10,7 @@ export SCRIPT_DIR=<YOUR_SCRIPT_DIR>  # e.g., ~/Marigold-DC/script
 
 For each dataset, download and process using the [dataset_processing.py](script/dataset_processing.py) script, passing the appropriate dataset flag.
 
-## 2. iBims-1
+## iBims-1
 
 We process all 100 available images in the iBims-1 dataset at original resolution 640 × 480, sampling 1000 random depth points from the intersection of valid pixel masks (invalid, transparent, missing).
 
@@ -32,7 +32,28 @@ python dataset_processing.py --dataset ibims1
 rm -r $BASE_DATA_DIR/ibims1_core_mat/
 ```
 
-## 6. NYU-Depth V2
+## VOID
+
+We utilize all 800 frames from the 8 designated test sequences, and the provided sparse depth maps with three density levels of 150, 500, and 1500 points. Inference is performed at original resolution of 640 × 480.
+
+The [VOID dataset](https://github.com/alexklwong/void-dataset) can be downloaded following the instruction in the repository:
+
+```bash
+cd $BASE_DATA_DIR 
+wget -O void_release.zip 'https://yaleedu-my.sharepoint.com/:u:/g/personal/alex_wong_yale_edu/Ebwvk0Ji8HhNinmAcKI5vSkBEjJTIWlA8PXwKNQX_FvB7g?e=0Zqe7g&download=1'
+unzip void_release.zip && rm void_release.zip
+```
+
+After that, call the `dataset_processing.py` script for VOID.
+
+```bash
+cd $SCRIPT_DIR
+python dataset_processing.py --dataset void
+# clean up
+rm -r $BASE_DATA_DIR/void_release/
+```
+
+## NYU-Depth V2
 
 We evaluate on the original test split consisting of 654 samples.
 Images are downsampled to 320 × 240 and then center-cropped to 304 × 228, following established practice.
@@ -58,7 +79,7 @@ rm $BASE_DATA_DIR/nyu_pred_with_500.h5
 
 NOTE: We process images at 768 resolution via upscaling at inference time, since otherwise the latent would be too small. Guidance is still performed at 304 × 228.
 
-## 7. KITTI DC
+## KITTI DC
 
 We evaluate on the original validation split consisting of 1000 samples, processing at the original resolution of 1216 × 352
 The sparse depth input is filtered like in [VPP4DC](https://github.com/bartn8/vppdc/).
@@ -80,7 +101,7 @@ python dataset_processing.py --dataset kittidc
 rm -r $BASE_DATA_DIR/depth_selection/
 ```
 
-## 8. DDAD
+## DDAD
 
 We use the official DDAD val split, which has 3950 samples (front-view only). Images have a resolution of 1936 × 1216, but we perform inference at a processing resolution of 768 to keep memory usage manageable.
 

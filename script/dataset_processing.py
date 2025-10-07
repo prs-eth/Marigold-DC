@@ -11,6 +11,80 @@ from tqdm import tqdm
 from utils import deterministic_select_k_true, filter_heuristic_depth
 
 
+def process_void():
+    """
+    Process the VOID dataset with sparse depth with 150, 500, and 1500 points.
+    """
+    base_data_dir = os.getenv("BASE_DATA_DIR")
+    if base_data_dir is None:
+        print("Error: BASE_DATA_DIR environment variable is not set")
+        exit(1)
+
+    for density in [150, 500, 1500]:
+        datapath = os.path.join(base_data_dir, f"void_release/void_{density}")
+        parent_dir = os.path.dirname(datapath)
+
+        intrinsics_txt = open(os.path.join(datapath, "test_intrinsics.txt"), 'r')
+        rgb_txt = open(os.path.join(datapath, "test_image.txt"), 'r')
+        hints_txt = open(os.path.join(datapath, "test_sparse_depth.txt"), 'r')
+        gt_txt = open(os.path.join(datapath, "test_ground_truth.txt"), 'r')
+        valid_txt = open(os.path.join(datapath, "test_validity_map.txt"))
+
+        calibtxt_list = []
+        image_list = []
+        hints_list = []
+        gt_list = []
+        valid_masks_list = []
+
+        while True:
+            i_path = intrinsics_txt.readline().strip()
+            rgb_path = rgb_txt.readline().strip()
+            hints_path = hints_txt.readline().strip()
+            gt_path = gt_txt.readline().strip()
+            valid_path = valid_txt.readline().strip()
+
+            if not i_path or not rgb_path or not hints_path or not gt_path or not valid_path:
+                break
+
+            calibtxt_list += [os.path.join(parent_dir, i_path)]
+            image_list += [os.path.join(parent_dir, rgb_path)]
+            hints_list += [os.path.join(parent_dir, hints_path)]
+            gt_list += [os.path.join(parent_dir, gt_path)]
+            valid_masks_list += [os.path.join(parent_dir, valid_path)]
+
+        intrinsics_txt.close()
+        rgb_txt.close()
+        hints_txt.close()
+        gt_txt.close()
+        valid_txt.close()
+
+        output_path = os.path.join(base_data_dir, f"void_{density}")
+        for subdir in ["gt", "sparse", "rgb", "intrinsics"]:
+            os.makedirs(os.path.join(output_path, subdir), exist_ok=True)
+
+        for id in tqdm(range(len(image_list))):
+            depth = np.asarray(Image.open(gt_list[id])) / 256
+            np.save(os.path.join(output_path, "gt", f'{id:04d}.npy'), depth)
+
+            hints = np.asarray(Image.open(hints_list[id])) / 256
+            np.save(os.path.join(output_path, "sparse", f'{id:04d}.npy'), hints)
+
+            rgb = Image.open(image_list[id])
+            rgb_image_path = os.path.join(output_path, "rgb", f'{id:04d}.png')
+            rgb.save(rgb_image_path, 'PNG')
+
+            shutil.copy(calibtxt_list[id], os.path.join(output_path, "intrinsics", f'{id:04d}.txt'))
+            if id == 0:
+                print("Debugging sample:")
+                print(f"RGB shape: {np.array(rgb).shape}")
+                print(f"Sparse depth shape: {hints.shape}")
+                print(f"Number of sparse depth points: {(hints > 0).sum()}")
+                print(f"GT depth shape: {depth.shape}")
+                print(f"GT depth range: [{depth[depth > 0].min():.3f}, {depth[depth > 0].max():.3f}]")
+
+        print(f"VOID {density} dataset processed successfully at", output_path)
+
+
 def process_nyu():
     """
     Process the NYU-Depth V2 dataset with sparse depth with 500 non-zero values.
@@ -196,6 +270,8 @@ if __name__ == "__main__":
 
     if args.dataset == "ibims1":
         process_ibims1()
+    elif args.dataset == "void":
+        process_void()
     elif args.dataset == "nyu":
         process_nyu()
     elif args.dataset == "kittidc":
