@@ -62,7 +62,9 @@ python -m marigold_dc \
 ```
 
 🛠️ Customize other settings:
-- `--num_inference_steps <int>` specifies the number of diffusion inference steps.
+- `--num_inference_steps <int>` specifies the number of diffusion inference steps (default: 50).
+- `--ensemble_size <int>` specifies the number of predictions to be ensembled (default: 1).
+- `--processing_resolution <int>` specifies the processing resolution for the denoising process (default: 768. Using 0 means processing at original resolution).
 - `--checkpoint <path>` allows overriding the base monocular depth estimation model checkpoint; can be a local path or a Hugging Face repository.
 
 ## 🏋️‍♂️ Training
