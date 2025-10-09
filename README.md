@@ -127,7 +127,8 @@ from (dense) image pixels, guided by sparse depth; rather than as inpainting (sp
 
 ## 📢 News
 
- - 2015-07-23: The paper is accepted at ICCV 2025.
+ - 2025-10-08: Evaluation code is released.
+ - 2025-07-23: The paper is accepted at ICCV 2025.
  - 2024-12-19: ArXiv paper and demo release.
  - 2024-12-18: Code release (this repository).
 
