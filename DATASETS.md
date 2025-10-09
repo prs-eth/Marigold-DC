@@ -1,14 +1,37 @@
 # Dataset Processing Instructions
 
-This document provides instructions for downloading and processing evaluation datasets used in Marigold-DC, especially for those that don't come with sparse depth maps.
+Here you can find instructions for downloading and processing evaluation datasets used in Marigold-DC, especially for those that don't come with predefined sparse depth maps.
 
-First, set the script directory variable.
+First, set the script directory variable and the base data directory.
 
 ```bash
 export SCRIPT_DIR=<YOUR_SCRIPT_DIR>  # e.g., ~/Marigold-DC/script
+export BASE_DATA_DIR=<YOUR_DATA_DIR>  # e.g., ~/Marigold-DC/datasets/
 ```
 
 For each dataset, download and process using the [dataset_processing.py](script/dataset_processing.py) script, passing the appropriate dataset flag.
+
+## ScanNet
+
+We use the same test split as in [DeCoTR](https://arxiv.org/pdf/2403.12202) and select 745 samples from the official 100 scenes for testing. The list of files can be found [here](script/eval/scannet_decotr_split.txt).
+
+RGB images are resized down to 640 × 480 to align with the sparse depth resolution, and 500 random points are sampled as sparse guidance from the ground truth depth maps.
+
+Download the [ScanNet](https://github.com/ScanNet/ScanNet) dataset in your BASE_DATA_DIR directory:
+
+```bash
+cd $SCRIPT_DIR
+python download_scannet.py --scene_list ./eval/scannet_decotr_split.txt --output_dir $BASE_DATA_DIR/scannet_test_all/
+```
+
+After that, call the `dataset_processing.py` script for ScanNet.
+
+```bash
+cd $SCRIPT_DIR
+python dataset_processing.py --dataset scannet
+# clean up
+rm -r $BASE_DATA_DIR/scannet_test_all/
+```
 
 ## iBims-1
 
@@ -34,9 +57,9 @@ rm -r $BASE_DATA_DIR/ibims1_core_mat/
 
 ## VOID
 
-We utilize all 800 frames from the 8 designated test sequences, and the provided sparse depth maps with three density levels of 150, 500, and 1500 points. Inference is performed at original resolution of 640 × 480.
+We utilize all 800 frames from the 8 designated test sequences, and the provided sparse depth maps with three density levels of 150, 500, and 1500 points. Inference is performed at the original resolution of 640 × 480.
 
-The [VOID dataset](https://github.com/alexklwong/void-dataset) can be downloaded following the instruction in the repository:
+The [VOID dataset](https://github.com/alexklwong/void-dataset) can be downloaded following the instructions in the repository:
 
 ```bash
 cd $BASE_DATA_DIR 
