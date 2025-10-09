@@ -3,7 +3,7 @@ numpy
 pandas
 pillow
 torch
-transformers
+transformers<4.47.0
 accelerate
 tqdm
 numba
