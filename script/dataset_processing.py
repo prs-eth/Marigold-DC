@@ -19,7 +19,7 @@ def process_scannet():
     if base_data_dir is None:
         print("Error: BASE_DATA_DIR environment variable is not set")
         exit(1)
-    output_path = os.path.join(base_data_dir, "scannet_decotr_split")
+    output_path = os.path.join(base_data_dir, "scannet")
     for subdir in ["gt", "sparse", "rgb", "intrinsics"]:
         os.makedirs(os.path.join(output_path, subdir), exist_ok=True)
 
@@ -30,8 +30,9 @@ def process_scannet():
     dataset_path = os.path.join(base_data_dir, "scannet_test_all")
     for id, scene in tqdm(enumerate(scenes)):
         scene_name, scene_id = scene.split("/")
+        scene_id = int(scene_id)
 
-        gt_depth = np.asarray(Image.open(os.path.join(dataset_path, scene_name, "depth", f"{scene_id}.png"))) / 1000
+        gt_depth = np.asarray(Image.open(os.path.join(dataset_path, scene_name, "depth", f"{scene_id:04d}.png"))) / 1000
         np.save(os.path.join(output_path, "gt", f"{scene_name}_{scene_id}.npy"), gt_depth)
 
         hints_mask = deterministic_select_k_true(gt_depth > 0, 500, 2024)
@@ -40,7 +41,7 @@ def process_scannet():
 
         np.save(os.path.join(output_path, "sparse", f"{scene_name}_{scene_id}.npy"), hints)
 
-        image_path = os.path.join(dataset_path, scene_name, "color", f"{scene_id}.jpg")
+        image_path = os.path.join(dataset_path, scene_name, "color", f"{scene_id:04d}.jpg")
         image = Image.open(image_path)
         rgb = image.resize((640, 480), Image.LANCZOS)
         rgb.save(os.path.join(output_path, "rgb", f"{scene_name}_{scene_id}.png"), "PNG")
@@ -48,7 +49,7 @@ def process_scannet():
         shutil.copy(os.path.join(dataset_path, scene_name, "intrinsic", "intrinsic_depth.txt"), os.path.join(output_path, "intrinsics", f"{scene_name}_{scene_id}.txt"))
         if id == 0:
             print("Debugging sample:")
-            print(f"RGB shape: {rgb.shape}")
+            print(f"RGB shape: {np.array(rgb).shape}")
             print(f"Sparse depth shape: {hints.shape}")
             print(f"Number of sparse depth points: {(hints > 0).sum()}")
             print(f"GT depth shape: {gt_depth.shape}")
