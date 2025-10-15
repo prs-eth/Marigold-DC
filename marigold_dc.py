@@ -59,6 +59,8 @@ class MarigoldDepthCompletionPipeline(MarigoldDepthPipeline):
         generator = torch.Generator(device=device).manual_seed(seed)
 
         # Check inputs
+        if not isinstance(num_inference_steps, int) or num_inference_steps < 1:
+            raise ValueError("Invalid num_inference_steps")
         if type(sparse_depth) is not np.ndarray or sparse_depth.ndim != 2:
             raise ValueError("Sparse depth should be a 2D numpy ndarray with zeros at missing positions")
         if ensemble_size < 1:
