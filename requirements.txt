@@ -1,6 +1,15 @@
 diffusers==0.31.0
 numpy
+pandas
 pillow
 torch
 transformers
 accelerate
+tqdm
+numba
+scipy
+h5py
+gdown
+imageio
+opencv-python
+pypng

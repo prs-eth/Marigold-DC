@@ -62,7 +62,9 @@ python -m marigold_dc \
 ```
 
 🛠️ Customize other settings:
-- `--num_inference_steps <int>` specifies the number of diffusion inference steps.
+- `--num_inference_steps <int>` specifies the number of diffusion inference steps (default: 50).
+- `--ensemble_size <int>` specifies the number of predictions to be ensembled (default: 1).
+- `--processing_resolution <int>` specifies the processing resolution for the denoising process (default: 768. Using 0 means processing at original resolution).
 - `--checkpoint <path>` allows overriding the base monocular depth estimation model checkpoint; can be a local path or a Hugging Face repository.
 
 ## 🏋️‍♂️ Training
@@ -80,7 +82,35 @@ export HF_HOME=/large_volume/cache
 ```
 
 ## 🦿 Evaluation on test datasets
-Coming soon
+
+Set the data directory variable (needed in evaluation scripts) and download the evaluation datasets there, following the instructions in [DATASETS.md](DATASETS.md) to create the sparse depth maps in a reproducible way.
+
+```bash
+export BASE_DATA_DIR=<YOUR_DATA_DIR>  # e.g., ~/Marigold-DC/datasets/
+```
+
+Each dataset in the data directory should have the following format:
+```
+dataset_name/
+├── rgb/                # RGB images (png, jpg, or jpeg)
+│   ├── image_001.png
+│   └── ...
+├── sparse/             # Sparse depth arrays in meters (.npy files), null values have 0
+│   ├── image_001.npy
+│   └── ...
+└── gt/                 # Ground truth dense depth arrays in meters (.npy files)
+    ├── image_001.npy
+    └── ...
+```
+
+Run inference and evaluation scripts, for example:
+```bash
+# Scannet
+bash script/eval/11_infer_scannet.sh  # Run inference
+bash script/eval/12_eval_scannet.sh   # Evaluate predictions
+```
+
+All scripts with the correct inference parameters are available in the `script/eval/` directory.
 
 ## Abstract
 
@@ -99,6 +129,8 @@ from (dense) image pixels, guided by sparse depth; rather than as inpainting (sp
 
 ## 📢 News
 
+ - 2025-10-08: Evaluation code is released.
+ - 2025-07-23: The paper is accepted at ICCV 2025.
  - 2024-12-19: ArXiv paper and demo release.
  - 2024-12-18: Code release (this repository).
 
