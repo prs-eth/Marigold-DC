@@ -212,7 +212,7 @@ def main():
     parser.add_argument("--ensemble_size", type=int, default=1, help="Number of predictions to be ensembled")
     parser.add_argument("--processing_resolution", type=int, default=768, help="Denoising resolution")
     parser.add_argument("--checkpoint", type=str, default=DEPTH_CHECKPOINT, help="Depth checkpoint")
-    parser.add_argument("--bfloat16", action="store_true", help="Use bfloat16 precision for inference")
+    parser.add_argument("--use_full_precision", action="store_true", help="Use full precision (float32) for inference")
     parser.add_argument("--use_tiny_vae", action="store_true", help="Use a lightweight tiny VAE for inference")
     args = parser.parse_args()
 
@@ -244,7 +244,7 @@ def main():
             logging.warning(f"CUDA not found: Reducing ensemble_size to {ensemble_size_non_cuda}")
             ensemble_size = ensemble_size_non_cuda
 
-    torch_dtype = torch.bfloat16 if args.bfloat16 else torch.float32
+    torch_dtype = torch.float32 if args.use_full_precision else torch.bfloat16
     logging.info(f"Using {torch_dtype} precision. Using full precision (float32) is discouraged.")
 
     pipe = MarigoldDepthCompletionPipeline.from_pretrained(args.checkpoint, prediction_type="depth").to(device, dtype=torch_dtype)
