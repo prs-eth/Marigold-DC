@@ -101,8 +101,11 @@ def main():
     pipe = MarigoldDepthCompletionPipeline.from_pretrained(args.checkpoint, prediction_type="depth").to(device, dtype=torch_dtype)
     pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing")
 
-    if not torch.cuda.is_available() or args.use_tiny_vae:
-        logging.warning(f"{'CUDA not found: ' if not torch.cuda.is_available() else ''}Using a lightweight VAE")
+    if not torch.cuda.is_available():
+        logging.warning("CUDA not found: Consider using tiny VAE for faster processing")
+
+    if args.use_tiny_vae:
+        logging.info("Using a lightweight VAE")
         del pipe.vae
         pipe.vae = diffusers.AutoencoderTiny.from_pretrained("madebyollin/taesd").to(device, dtype=torch_dtype)
 
