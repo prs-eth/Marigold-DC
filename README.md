@@ -119,7 +119,8 @@ Full-precision inference in `float32` can be re-enabled by specifying the `--use
 
 In addition, a lightweight [Tiny VAE](https://github.com/madebyollin/taesd) (the default for CPU processing) can also be enabled on GPU by setting the `--use_tiny_vae` flag. Note that this comes at the cost of prediction quality.
 
-Compiling the model can further improve inference speed, but again at the cost of performance. This is most beneficial when the same pipeline instance is used repeatedly. This can be achieved by calling `torch.compile` after the pipeline has been loaded:just tell
+Compiling the model can further improve inference speed, but again at the cost of performance. This is most beneficial when the same pipeline instance is used repeatedly, and can be achieved by calling `torch.compile` after the pipeline has been loaded:
+
 ```python
 pipe.vae = torch.compile(pipe.vae, mode="reduce-overhead", fullgraph=True)
 pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
