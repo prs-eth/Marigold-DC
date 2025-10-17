@@ -112,6 +112,33 @@ bash script/eval/12_eval_scannet.sh   # Evaluate predictions
 
 All scripts with the correct inference parameters are available in the `script/eval/` directory.
 
+## 🏎️💨 Inference speed
+
+By default, the code runs with `bfloat16` precision on supported GPUs, enabling faster inference with negligible accuracy loss while preserving sufficient gradient precision for backpropagation.
+Full-precision inference in `float32` can be re-enabled by specifying the `--use_full_precision` flag.
+
+In addition, a lightweight [Tiny VAE](https://github.com/madebyollin/taesd) (the suggested option for CPU processing) can also be enabled on GPU by setting the `--use_tiny_vae` flag. Note that this comes at the cost of prediction quality.
+
+Compiling the model can further improve inference speed, but again at the cost of performance. This is most beneficial when the same pipeline instance is used repeatedly, and can be achieved by calling `torch.compile` after the pipeline has been loaded:
+
+```python
+pipe.vae = torch.compile(pipe.vae, mode="reduce-overhead", fullgraph=True)
+pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
+```
+
+Below, we report average runtime on A100 and performance on the 100 samples from NYUv2 used for ablation in the main paper.
+
+| Variant                        | Time (50 Steps) | Speed        | MAE   | RMSE  |
+|--------------------------------|---------------:|------------:|------:|------:|
+| **float32**                    | 18.03 sec      | 2.77 iter/s  | 0.066 | 0.171 |
+| **bfloat16** (*)               | 10.71 sec      | 4.67 iter/s  | 0.066 | 0.171 |
+| **bfloat16 + compile**         | 8.85 sec       | 5.65 iter/s  | 0.067 | 0.172 |
+| **Tiny VAE**                   | 9.99 sec       | 5.00 iter/s  | 0.068 | 0.174 |
+| **TinyVAE + bfloat16**       | 5.63 sec       | 8.88 iter/s  | 0.069 | 0.173 |
+| **TinyVAE + bfloat16 + compile** | 3.70 sec      | 13.53 iter/s | 0.070 | 0.175 |
+
+(*) Used by default
+
 ## Abstract
 
 Depth completion upgrades sparse depth measurements into dense depth maps, guided by a conventional image. 
@@ -129,6 +156,7 @@ from (dense) image pixels, guided by sparse depth; rather than as inpainting (sp
 
 ## 📢 News
 
+ - 2025-10-16: Added options to speed up inference.
  - 2025-10-08: Evaluation code is released.
  - 2025-07-23: The paper is accepted at ICCV 2025.
  - 2024-12-19: ArXiv paper and demo release.

@@ -48,6 +48,8 @@ def main():
     parser.add_argument("--ensemble_size", type=int, default=1, help="Number of predictions to be ensembled")
     parser.add_argument("--processing_resolution", type=int, default=768, help="Denoising resolution")
     parser.add_argument("--checkpoint", type=str, default=DEPTH_CHECKPOINT, help="Depth checkpoint")
+    parser.add_argument("--use_full_precision", action="store_true", help="Use full precision (float32) for inference")
+    parser.add_argument("--use_tiny_vae", action="store_true", help="Use a lightweight tiny VAE for inference")
     parser.add_argument("--seed", type=int, default=2024, help="Seed")
     args = parser.parse_args()
 
@@ -93,13 +95,19 @@ def main():
             logging.warning(f"CUDA not found: Reducing ensemble_size to {ensemble_size_non_cuda}")
             ensemble_size = ensemble_size_non_cuda
 
-    pipe = MarigoldDepthCompletionPipeline.from_pretrained(args.checkpoint, prediction_type="depth").to(device)
+    torch_dtype = torch.float32 if args.use_full_precision else torch.bfloat16
+    logging.info(f"Using {torch_dtype} precision. Using full precision (float32) is discouraged.")
+
+    pipe = MarigoldDepthCompletionPipeline.from_pretrained(args.checkpoint, prediction_type="depth").to(device, dtype=torch_dtype)
     pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing")
 
     if not torch.cuda.is_available():
-        logging.warning("CUDA not found: Using a lightweight VAE")
+        logging.warning("CUDA not found: Consider using tiny VAE for faster processing")
+
+    if args.use_tiny_vae:
+        logging.info("Using a lightweight VAE")
         del pipe.vae
-        pipe.vae = diffusers.AutoencoderTiny.from_pretrained("madebyollin/taesd").to(device)
+        pipe.vae = diffusers.AutoencoderTiny.from_pretrained("madebyollin/taesd").to(device, dtype=torch_dtype)
 
     rgb_dir = os.path.join(args.input_dir, "rgb")
     rgb_file_paths = []
