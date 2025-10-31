@@ -304,8 +304,6 @@ def process_ddad():
             print(f"Number of sparse depth points: {(hints > 0).sum()}")
             print(f"GT depth shape: {depth.shape}")
             print(f"GT depth range: [{depth[depth > 0].min():.3f}, {depth[depth > 0].max():.3f}]")
-        if id == 10:
-            break
     print("DDAD dataset processed successfully at", output_path)
 
 
